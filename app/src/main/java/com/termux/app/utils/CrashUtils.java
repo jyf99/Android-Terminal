@@ -47,9 +47,11 @@ public class CrashUtils {
         if (context == null) return;
 
 
-        TermuxAppSharedPreferences preferences = new TermuxAppSharedPreferences(context);
+        TermuxAppSharedPreferences preferences = TermuxAppSharedPreferences.build(context);
+        if (preferences == null) return;
+
         // If user has disabled notifications for crashes
-        if (!preferences.getCrashReportNotificationsEnabled())
+        if (!preferences.areCrashReportNotificationsEnabled())
             return;
 
         new Thread() {

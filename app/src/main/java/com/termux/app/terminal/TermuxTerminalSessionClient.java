@@ -37,19 +37,75 @@ public class TermuxTerminalSessionClient extends TermuxTerminalSessionClientBase
 
     private static final int MAX_SESSIONS = 8;
 
-    private final SoundPool mBellSoundPool = new SoundPool.Builder().setMaxStreams(1).setAudioAttributes(
-        new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION).build()).build();
+    private SoundPool mBellSoundPool;
 
-    private final int mBellSoundId;
+    private int mBellSoundId;
 
     private static final String LOG_TAG = "TermuxTerminalSessionClient";
 
     public TermuxTerminalSessionClient(TermuxActivity activity) {
         this.mActivity = activity;
-
-        mBellSoundId = mBellSoundPool.load(activity, R.raw.bell, 1);
     }
+
+    /**
+     * Should be called when mActivity.onCreate() is called
+     */
+    public void onCreate() {
+        // Set terminal fonts and colors
+        checkForFontAndColors();
+    }
+
+    /**
+     * Should be called when mActivity.onStart() is called
+     */
+    public void onStart() {
+        // The service has connected, but data may have changed since we were last in the foreground.
+        // Get the session stored in shared preferences stored by {@link #onStop} if its valid,
+        // otherwise get the last session currently running.
+        if (mActivity.getTermuxService() != null) {
+            setCurrentSession(getCurrentStoredSessionOrLast());
+            termuxSessionListNotifyUpdated();
+        }
+
+        // The current terminal session may have changed while being away, force
+        // a refresh of the displayed terminal.
+        mActivity.getTerminalView().onScreenUpdated();
+    }
+
+    /**
+     * Should be called when mActivity.onResume() is called
+     */
+    public void onResume() {
+        // Just initialize the mBellSoundPool and load the sound, otherwise bell might not run
+        // the first time bell key is pressed and play() is called, since sound may not be loaded
+        // quickly enough before the call to play(). https://stackoverflow.com/questions/35435625
+        getBellSoundPool();
+    }
+
+    /**
+     * Should be called when mActivity.onStop() is called
+     */
+    public void onStop() {
+        // Store current session in shared preferences so that it can be restored later in
+        // {@link #onStart} if needed.
+        setCurrentStoredSession();
+
+        // Release mBellSoundPool resources, specially to prevent exceptions like the following to be thrown
+        // java.util.concurrent.TimeoutException: android.media.SoundPool.finalize() timed out after 10 seconds
+        // Bell is not played in background anyways
+        // Related: https://stackoverflow.com/a/28708351/14686958
+        releaseBellSoundPool();
+    }
+
+    /**
+     * Should be called when mActivity.reloadActivityStyling() is called
+     */
+    public void onReload() {
+        // Set terminal fonts and colors
+        checkForFontAndColors();
+    }
+
+
 
     @Override
     public void onTextChanged(TerminalSession changedSession) {
@@ -122,19 +178,54 @@ public class TermuxTerminalSessionClient extends TermuxTerminalSessionClientBase
                 BellHandler.getInstance(mActivity).doBell();
                 break;
             case TermuxPropertyConstants.IVALUE_BELL_BEHAVIOUR_BEEP:
-                mBellSoundPool.play(mBellSoundId, 1.f, 1.f, 1, 0, 1.f);
+                getBellSoundPool().play(mBellSoundId, 1.f, 1.f, 1, 0, 1.f);
                 break;
             case TermuxPropertyConstants.IVALUE_BELL_BEHAVIOUR_IGNORE:
                 // Ignore the bell character.
                 break;
         }
-
     }
 
     @Override
     public void onColorsChanged(TerminalSession changedSession) {
         if (mActivity.getCurrentSession() == changedSession)
             updateBackgroundColor();
+    }
+
+    @Override
+    public void onTerminalCursorStateChange(boolean enabled) {
+        // Do not start cursor blinking thread if activity is not visible
+        if (enabled && !mActivity.isVisible()) {
+            Logger.logVerbose(LOG_TAG, "Ignoring call to start cursor blinking since activity is not visible");
+            return;
+        }
+
+        // If cursor is to enabled now, then start cursor blinking if blinking is enabled
+        // otherwise stop cursor blinking
+        mActivity.getTerminalView().setTerminalCursorBlinkerState(enabled, false);
+    }
+
+
+
+    /** Initialize and get mBellSoundPool */
+    private synchronized SoundPool getBellSoundPool() {
+        if (mBellSoundPool == null) {
+            mBellSoundPool = new SoundPool.Builder().setMaxStreams(1).setAudioAttributes(
+                new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION).build()).build();
+
+            mBellSoundId = mBellSoundPool.load(mActivity, R.raw.bell, 1);
+        }
+
+        return mBellSoundPool;
+    }
+
+    /** Release mBellSoundPool resources */
+    private synchronized void releaseBellSoundPool() {
+        if (mBellSoundPool != null) {
+            mBellSoundPool.release();
+            mBellSoundPool = null;
+        }
     }
 
 

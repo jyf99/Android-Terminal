@@ -3,9 +3,11 @@ package com.termux.shared.termux;
 import android.annotation.SuppressLint;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 /*
- * Version: v0.19.0
+ * Version: v0.21.0
  *
  * Changelog
  *
@@ -135,6 +137,19 @@ import java.io.File;
  *      - Added `TERMUX_SERVICE.EXTRA_STDIN`.
  *      - Added `RUN_COMMAND_SERVICE.EXTRA_STDIN`.
  *      - Deprecated `TERMUX_ACTIVITY.EXTRA_RELOAD_STYLE`.
+ *
+ * - 0.20.0 (2021-05-13)
+ *      - Added `TERMUX_WIKI`, `TERMUX_WIKI_URL`, `TERMUX_PLUGIN_APP_NAMES_LIST`, `TERMUX_PLUGIN_APP_PACKAGE_NAMES_LIST`.
+ *      - Added `TERMUX_SETTINGS_ACTIVITY_NAME`.
+ *
+ * - 0.21.0 (2021-05-13)
+ *      - Added `APK_RELEASE_FDROID`, `APK_RELEASE_FDROID_SIGNING_CERTIFICATE_SHA256_DIGEST`,
+ *          `APK_RELEASE_GITHUB_DEBUG_BUILD`, `APK_RELEASE_GITHUB_DEBUG_BUILD_SIGNING_CERTIFICATE_SHA256_DIGEST`,
+ *          `APK_RELEASE_GOOGLE_PLAYSTORE`, `APK_RELEASE_GOOGLE_PLAYSTORE_SIGNING_CERTIFICATE_SHA256_DIGEST`.
+ *
+ * - 0.22.0 (2021-05-13)
+ *      - Added `TERMUX_DONATE_URL`.
+ *
  */
 
 /**
@@ -188,18 +203,6 @@ public final class TermuxConstants {
     /** Termux Github organization url */
     public static final String TERMUX_GITHUB_ORGANIZATION_URL = "https://github.com" + "/" + TERMUX_GITHUB_ORGANIZATION_NAME; // Default: "https://github.com/termux"
 
-    /** Termux support email url */
-    public static final String TERMUX_SUPPORT_EMAIL_URL = "termuxreports@groups.io"; // Default: "termuxreports@groups.io"
-
-    /** Termux support email mailto url */
-    public static final String TERMUX_SUPPORT_EMAIL_MAILTO_URL = "mailto:" + TERMUX_SUPPORT_EMAIL_URL; // Default: "mailto:termuxreports@groups.io"
-
-    /** Termux Reddit subreddit */
-    public static final String TERMUX_REDDIT_SUBREDDIT = "r/termux"; // Default: "r/termux"
-
-    /** Termux Reddit subreddit url */
-    public static final String TERMUX_REDDIT_SUBREDDIT_URL = "https://www.reddit.com/r/termux"; // Default: "https://www.reddit.com/r/termux"
-
     /** F-Droid packages base url */
     public static final String FDROID_PACKAGES_BASE_URL = "https://f-droid.org/en/packages"; // Default: "https://f-droid.org/en/packages"
 
@@ -221,8 +224,6 @@ public final class TermuxConstants {
     public static final String TERMUX_GITHUB_REPO_URL = TERMUX_GITHUB_ORGANIZATION_URL + "/" + TERMUX_GITHUB_REPO_NAME; // Default: "https://github.com/termux/termux-app"
     /** Termux Github issues repo url */
     public static final String TERMUX_GITHUB_ISSUES_REPO_URL = TERMUX_GITHUB_REPO_URL + "/issues"; // Default: "https://github.com/termux/termux-app/issues"
-    /** Termux Github wiki repo url */
-    public static final String TERMUX_GITHUB_WIKI_REPO_URL = TERMUX_GITHUB_REPO_URL + "/wiki"; // Default: "https://github.com/termux/termux-app/wiki"
     /** Termux F-Droid package url */
     public static final String TERMUX_FDROID_PACKAGE_URL = FDROID_PACKAGES_BASE_URL + "/" + TERMUX_PACKAGE_NAME; // Default: "https://f-droid.org/en/packages/com.termux"
 
@@ -315,6 +316,56 @@ public final class TermuxConstants {
 
 
     /*
+     * Termux plugin apps lists.
+     */
+
+    public static final List<String> TERMUX_PLUGIN_APP_NAMES_LIST = Arrays.asList(
+        TERMUX_API_APP_NAME,
+        TERMUX_BOOT_APP_NAME,
+        TERMUX_FLOAT_APP_NAME,
+        TERMUX_STYLING_APP_NAME,
+        TERMUX_TASKER_APP_NAME,
+        TERMUX_WIDGET_APP_NAME);
+
+    public static final List<String> TERMUX_PLUGIN_APP_PACKAGE_NAMES_LIST = Arrays.asList(
+        TERMUX_API_PACKAGE_NAME,
+        TERMUX_BOOT_PACKAGE_NAME,
+        TERMUX_FLOAT_PACKAGE_NAME,
+        TERMUX_STYLING_PACKAGE_NAME,
+        TERMUX_TASKER_PACKAGE_NAME,
+        TERMUX_WIDGET_PACKAGE_NAME);
+
+
+
+
+
+    /*
+     * Termux APK releases.
+     */
+
+    /** F-Droid APK release */
+    public static final String APK_RELEASE_FDROID = "F-Droid"; // Default: "F-Droid"
+
+    /** F-Droid APK release signing certificate SHA-256 digest */
+    public static final String APK_RELEASE_FDROID_SIGNING_CERTIFICATE_SHA256_DIGEST = "228FB2CFE90831C1499EC3CCAF61E96E8E1CE70766B9474672CE427334D41C42"; // Default: "228FB2CFE90831C1499EC3CCAF61E96E8E1CE70766B9474672CE427334D41C42"
+
+    /** Github Debug Build APK release */
+    public static final String APK_RELEASE_GITHUB_DEBUG_BUILD = "Github Debug Build"; // Default: "Github Debug Build"
+
+    /** Github Debug Build APK release signing certificate SHA-256 digest */
+    public static final String APK_RELEASE_GITHUB_DEBUG_BUILD_SIGNING_CERTIFICATE_SHA256_DIGEST = "B6DA01480EEFD5FBF2CD3771B8D1021EC791304BDD6C4BF41D3FAABAD48EE5E1"; // Default: "B6DA01480EEFD5FBF2CD3771B8D1021EC791304BDD6C4BF41D3FAABAD48EE5E1"
+
+    /** Google Play Store APK release */
+    public static final String APK_RELEASE_GOOGLE_PLAYSTORE = "Google Play Store"; // Default: "Google Play Store"
+
+    /** Google Play Store APK release signing certificate SHA-256 digest */
+    public static final String APK_RELEASE_GOOGLE_PLAYSTORE_SIGNING_CERTIFICATE_SHA256_DIGEST = "738F0A30A04D3C8A1BE304AF18D0779BCF3EA88FB60808F657A3521861C2EBF9"; // Default: "738F0A30A04D3C8A1BE304AF18D0779BCF3EA88FB60808F657A3521861C2EBF9"
+
+
+
+
+
+    /*
      * Termux packages urls.
      */
 
@@ -324,8 +375,6 @@ public final class TermuxConstants {
     public static final String TERMUX_PACKAGES_GITHUB_REPO_URL = TERMUX_GITHUB_ORGANIZATION_URL + "/" + TERMUX_PACKAGES_GITHUB_REPO_NAME; // Default: "https://github.com/termux/termux-packages"
     /** Termux Packages Github issues repo url */
     public static final String TERMUX_PACKAGES_GITHUB_ISSUES_REPO_URL = TERMUX_PACKAGES_GITHUB_REPO_URL + "/issues"; // Default: "https://github.com/termux/termux-packages/issues"
-    /** Termux Packages wiki repo url */
-    public static final String TERMUX_PACKAGES_GITHUB_WIKI_REPO_URL = TERMUX_PACKAGES_GITHUB_REPO_URL + "/wiki"; // Default: "https://github.com/termux/termux-packages/wiki"
 
 
     /** Termux Game Packages Github repo name */
@@ -366,6 +415,44 @@ public final class TermuxConstants {
     public static final String TERMUX_X11_PACKAGES_GITHUB_REPO_URL = TERMUX_GITHUB_ORGANIZATION_URL + "/" + TERMUX_X11_PACKAGES_GITHUB_REPO_NAME; // Default: "https://github.com/termux/x11-packages"
     /** Termux X11 Packages Github issues repo url */
     public static final String TERMUX_X11_PACKAGES_GITHUB_ISSUES_REPO_URL = TERMUX_X11_PACKAGES_GITHUB_REPO_URL + "/issues"; // Default: "https://github.com/termux/x11-packages/issues"
+
+
+
+
+
+    /*
+     * Termux miscellaneous urls.
+     */
+
+    /** Termux Wiki */
+    public static final String TERMUX_WIKI = TERMUX_APP_NAME + " Wiki"; // Default: "Termux Wiki"
+
+    /** Termux Wiki url */
+    public static final String TERMUX_WIKI_URL = "https://wiki.termux.com"; // Default: "https://wiki.termux.com"
+
+    /** Termux Github wiki repo url */
+    public static final String TERMUX_GITHUB_WIKI_REPO_URL = TERMUX_GITHUB_REPO_URL + "/wiki"; // Default: "https://github.com/termux/termux-app/wiki"
+
+    /** Termux Packages wiki repo url */
+    public static final String TERMUX_PACKAGES_GITHUB_WIKI_REPO_URL = TERMUX_PACKAGES_GITHUB_REPO_URL + "/wiki"; // Default: "https://github.com/termux/termux-packages/wiki"
+
+
+    /** Termux support email url */
+    public static final String TERMUX_SUPPORT_EMAIL_URL = "termuxreports@groups.io"; // Default: "termuxreports@groups.io"
+
+    /** Termux support email mailto url */
+    public static final String TERMUX_SUPPORT_EMAIL_MAILTO_URL = "mailto:" + TERMUX_SUPPORT_EMAIL_URL; // Default: "mailto:termuxreports@groups.io"
+
+
+    /** Termux Reddit subreddit */
+    public static final String TERMUX_REDDIT_SUBREDDIT = "r/termux"; // Default: "r/termux"
+
+    /** Termux Reddit subreddit url */
+    public static final String TERMUX_REDDIT_SUBREDDIT_URL = "https://www.reddit.com/r/termux"; // Default: "https://www.reddit.com/r/termux"
+
+
+    /** Termux donate url */
+    public static final String TERMUX_DONATE_URL = TERMUX_PACKAGES_GITHUB_REPO_URL + "/wiki/Donate"; // Default: "https://github.com/termux/termux-packages/wiki/Donate"
 
 
 
@@ -649,6 +736,13 @@ public final class TermuxConstants {
             public static final String EXTRA_RELOAD_STYLE = TermuxConstants.TERMUX_PACKAGE_NAME + ".app.reload_style"; // Default: "com.termux.app.reload_style"
 
         }
+
+
+
+
+
+        /** Termux app settings activity name. */
+        public static final String TERMUX_SETTINGS_ACTIVITY_NAME = TERMUX_PACKAGE_NAME + ".app.activities.SettingsActivity"; // Default: "com.termux.app.activities.SettingsActivity"
 
 
 

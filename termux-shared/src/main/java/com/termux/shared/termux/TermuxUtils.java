@@ -133,6 +133,38 @@ public class TermuxUtils {
     }
 
     /**
+     * Get a markdown {@link String} for the apps info of all/any termux plugin apps installed.
+     *
+     * @param currentPackageContext The context of current package.
+     * @return Returns the markdown {@link String}.
+     */
+    public static String getTermuxPluginAppsInfoMarkdownString(@NonNull final Context currentPackageContext) {
+        if (currentPackageContext == null) return "null";
+
+        StringBuilder markdownString = new StringBuilder();
+
+        List<String> termuxPluginAppPackageNamesList = TermuxConstants.TERMUX_PLUGIN_APP_PACKAGE_NAMES_LIST;
+
+        if (termuxPluginAppPackageNamesList != null) {
+            for (int i = 0; i < termuxPluginAppPackageNamesList.size(); i++) {
+                String termuxPluginAppPackageName = termuxPluginAppPackageNamesList.get(i);
+                Context termuxPluginAppContext = PackageUtils.getContextForPackage(currentPackageContext, termuxPluginAppPackageName);
+                // If the package context for the plugin app is not null, then assume its installed and get its info
+                if (termuxPluginAppContext != null) {
+                    if (i != 0)
+                        markdownString.append("\n\n");
+                    markdownString.append(TermuxUtils.getAppInfoMarkdownString(termuxPluginAppContext, false));
+                }
+            }
+        }
+
+        if (markdownString.toString().isEmpty())
+            return null;
+
+        return markdownString.toString();
+    }
+
+    /**
      * Get a markdown {@link String} for the app info. If the {@code context} passed is different
      * from the {@link TermuxConstants#TERMUX_PACKAGE_NAME} package context, then this function
      * must have been called by a different package like a plugin, so we return info for both packages
@@ -195,6 +227,12 @@ public class TermuxUtils {
         appendPropertyToMarkdown(markdownString,"TARGET_SDK", PackageUtils.getTargetSDKForPackage(context));
         appendPropertyToMarkdown(markdownString,"IS_DEBUG_BUILD", PackageUtils.isAppForPackageADebugBuild(context));
 
+        String signingCertificateSHA256Digest = PackageUtils.getSigningCertificateSHA256DigestForPackage(context);
+        if (signingCertificateSHA256Digest != null) {
+            appendPropertyToMarkdown(markdownString,"APK_RELEASE", getAPKRelease(signingCertificateSHA256Digest));
+            appendPropertyToMarkdown(markdownString,"SIGNING_CERTIFICATE_SHA256_DIGEST", signingCertificateSHA256Digest);
+        }
+
         return markdownString.toString();
     }
 
@@ -223,6 +261,8 @@ public class TermuxUtils {
             appendPropertyToMarkdown(markdownString, "RELEASE", Build.VERSION.RELEASE);
         else
             appendPropertyToMarkdown(markdownString, "CODENAME", Build.VERSION.CODENAME);
+        appendPropertyToMarkdown(markdownString, "ID", Build.ID);
+        appendPropertyToMarkdown(markdownString, "DISPLAY", Build.DISPLAY);
         appendPropertyToMarkdown(markdownString, "INCREMENTAL", Build.VERSION.INCREMENTAL);
         appendPropertyToMarkdownIfSet(markdownString, "SECURITY_PATCH", systemProperties.getProperty("ro.build.version.security_patch"));
         appendPropertyToMarkdownIfSet(markdownString, "IS_DEBUGGABLE", systemProperties.getProperty("ro.debuggable"));
@@ -236,8 +276,6 @@ public class TermuxUtils {
         appendPropertyToMarkdown(markdownString, "BRAND", Build.BRAND);
         appendPropertyToMarkdown(markdownString, "MODEL", Build.MODEL);
         appendPropertyToMarkdown(markdownString, "PRODUCT", Build.PRODUCT);
-        appendPropertyToMarkdown(markdownString, "DISPLAY", Build.DISPLAY);
-        appendPropertyToMarkdown(markdownString, "ID", Build.ID);
         appendPropertyToMarkdown(markdownString, "BOARD", Build.BOARD);
         appendPropertyToMarkdown(markdownString, "HARDWARE", Build.HARDWARE);
         appendPropertyToMarkdown(markdownString, "DEVICE", Build.DEVICE);
@@ -291,6 +329,45 @@ public class TermuxUtils {
         return markdownString.toString();
     }
 
+    /**
+     * Get a markdown {@link String} for important links.
+     *
+     * @param context The context for operations.
+     * @return Returns the markdown {@link String}.
+     */
+    public static String getImportantLinksMarkdownString(@NonNull final Context context) {
+        if (context == null) return "null";
+
+        StringBuilder markdownString = new StringBuilder();
+
+        markdownString.append("## Important Links");
+
+        markdownString.append("\n\n### Github\n");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_APP_NAME, TermuxConstants.TERMUX_GITHUB_REPO_URL)).append("  ");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_API_APP_NAME, TermuxConstants.TERMUX_API_GITHUB_REPO_URL)).append("  ");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_BOOT_APP_NAME, TermuxConstants.TERMUX_BOOT_GITHUB_REPO_URL)).append("  ");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_FLOAT_APP_NAME, TermuxConstants.TERMUX_FLOAT_GITHUB_REPO_URL)).append("  ");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_STYLING_APP_NAME, TermuxConstants.TERMUX_STYLING_GITHUB_REPO_URL)).append("  ");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_TASKER_APP_NAME, TermuxConstants.TERMUX_TASKER_GITHUB_REPO_URL)).append("  ");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_WIDGET_APP_NAME, TermuxConstants.TERMUX_WIDGET_GITHUB_REPO_URL)).append("  ");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_PACKAGES_GITHUB_REPO_NAME, TermuxConstants.TERMUX_PACKAGES_GITHUB_REPO_URL)).append("  ");
+
+        markdownString.append("\n\n### Email\n");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_SUPPORT_EMAIL_URL, TermuxConstants.TERMUX_SUPPORT_EMAIL_MAILTO_URL)).append("  ");
+
+        markdownString.append("\n\n### Reddit\n");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_REDDIT_SUBREDDIT, TermuxConstants.TERMUX_REDDIT_SUBREDDIT_URL)).append("  ");
+
+        markdownString.append("\n\n### Wiki\n");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_WIKI, TermuxConstants.TERMUX_WIKI_URL)).append("  ");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_APP_NAME, TermuxConstants.TERMUX_GITHUB_WIKI_REPO_URL)).append("  ");
+        markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_PACKAGES_GITHUB_REPO_NAME, TermuxConstants.TERMUX_PACKAGES_GITHUB_WIKI_REPO_URL)).append("  ");
+
+        markdownString.append("\n##\n");
+
+        return markdownString.toString();
+    }
+
 
 
     /**
@@ -303,7 +380,7 @@ public class TermuxUtils {
      */
     public static String geAPTInfoMarkdownString(@NonNull final Context context) {
 
-        String aptInfoScript = null;
+        String aptInfoScript;
         InputStream inputStream = context.getResources().openRawResource(com.termux.shared.R.raw.apt_info_script);
         try {
             aptInfoScript = IOUtils.toString(inputStream, Charset.defaultCharset());
@@ -417,6 +494,21 @@ public class TermuxUtils {
         final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         return df.format(new Date());
+    }
+
+    public static String getAPKRelease(String signingCertificateSHA256Digest) {
+        if (signingCertificateSHA256Digest == null) return "null";
+
+        switch (signingCertificateSHA256Digest.toUpperCase()) {
+            case TermuxConstants.APK_RELEASE_FDROID_SIGNING_CERTIFICATE_SHA256_DIGEST:
+                return TermuxConstants.APK_RELEASE_FDROID;
+            case TermuxConstants.APK_RELEASE_GITHUB_DEBUG_BUILD_SIGNING_CERTIFICATE_SHA256_DIGEST:
+                return TermuxConstants.APK_RELEASE_GITHUB_DEBUG_BUILD;
+            case TermuxConstants.APK_RELEASE_GOOGLE_PLAYSTORE_SIGNING_CERTIFICATE_SHA256_DIGEST:
+                return TermuxConstants.APK_RELEASE_GOOGLE_PLAYSTORE;
+            default:
+                return "Unknown";
+        }
     }
 
 }

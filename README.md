@@ -8,6 +8,8 @@
 
 Note that this repository is for the app itself (the user interface and the terminal emulation). For the packages installable inside the app, see [termux/termux-packages](https://github.com/termux/termux-packages).
 
+Quick how-to about Termux package management is available at [Package Management](https://github.com/termux/termux-packages/wiki/Package-Management). It also has info on how to fix **`repository is under maintenance or down`** errors when running `apt` or `pkg` commands.
+
 ***
 
 **@termux is looking for Termux Application maintainers for implementing new features, fixing bugs and reviewing pull requests since current one (@fornwall) is inactive.**
@@ -60,7 +62,7 @@ For users who don't want to wait for F-Droid releases and want to try out the la
 
 **Termux and its plugins are no longer updated on [Google playstore](https://play.google.com/store/apps/details?id=com.termux) due to [android 10 issues](https://github.com/termux/termux-packages/wiki/Termux-and-Android-10).** The last version released for Android `>= 7` was `v0.101`. There are currently no immediate plans to resume updates on Google playstore. **It is highly recommended to not install Termux from playstore for now.** Any current users **should switch** to a different source like F-Droid.
 
-If for some reason you don't want to switch, then at least check [Package Management](https://github.com/termux/termux-packages/wiki/Package-Management) to switch to a different mirror and then run `pkg upgrade` command to update all packages to the latest available versions if you want, or at least update `termux-tools` package with `pkg install termux-tools` command.
+If for some reason you don't want to switch, then at least check [Package Management](https://github.com/termux/termux-packages/wiki/Package-Management) to **change your mirror**, otherwise you will get **`repository is under maintenance or down`** errors when running `apt` or `pkg` commands. After that, it is also **highly advisable** to run `pkg upgrade` command to update all packages to the latest available versions, or at least update `termux-tools` package with `pkg install termux-tools` command.
 ##
 
 
